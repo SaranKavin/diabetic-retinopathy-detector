@@ -7,20 +7,22 @@
 This project implements a **deep learning system for detecting Diabetic Retinopathy (DR)** from retinal fundus images using a **CNN with attention mechanism**. It provides a complete pipeline from model training to deployment with a web interface for clinical use.
 
 ## 🌐 Web Application Preview
-**Home Page**
-![Upload Page](static/screenshots/input_img.png)
 
-**Patient Details**
-![Prediction](static/screenshots/output.png)
+### 🏠 Home Page
+![Home Page](static/screenshots/input_img.png)
 
-**Predection Result**
-![Prediction](static/screenshots/prediction_result.png)
+### 🧑‍⚕️ Patient Details & Image Upload
+![Patient Details](static/screenshots/output.png)
 
-**Sample Confusion Matrix Metrics**
-![Prediction](static/screenshots/Confusion_Matrix_Metrics.png)
+### 📊 Prediction Result
+![Prediction Result](static/screenshots/prediction_result.png)
 
-**Generate Report**
-![Prediction](static/screenshots/report.png)
+### 📈 Confusion Matrix & Performance Metrics
+![Confusion Matrix Metrics](static/screenshots/Confusion_Matrix_Metrics.png)
+
+### 🧾 Generated Medical Report
+![Generated Report](static/screenshots/report.png)
+
 
 ## ✨ Features
 
