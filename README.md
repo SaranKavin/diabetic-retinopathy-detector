@@ -19,7 +19,7 @@ This project implements a **deep learning system for detecting Diabetic Retinopa
 **Sample Confusion Matrix Metrics**
 ![Prediction](static/screenshots/Confusion_Matrix_Metrics.png)
 
-**Generate Report pdf**
+**Generate Report**
 ![Prediction](static/screenshots/report.png)
 
 ## ✨ Features
