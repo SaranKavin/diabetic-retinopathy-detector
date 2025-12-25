@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetic Retinopathy Detector</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #a2d2ff, #e0f7fa);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    color: #1e293b;
+}
+
+.container {
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(15px) saturate(180%);
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    padding: 2.5rem 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 3px rgba(30,58,138,0.2);
+}
+
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+form input, form select, form button {
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+form input:focus, form select:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 10px rgba(37,99,235,0.2);
+}
+
+form button {
+    grid-column: span 2;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 5px 15px rgba(37,99,235,0.3);
+    transition: all 0.3s ease;
+}
+
+form button:hover {
+    background: #1d4ed8;
+    box-shadow: 0 8px 25px rgba(29,78,216,0.5);
+}
+
+.patient-details, .prediction {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(10px) saturate(180%);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 0.7rem 0.5rem;
+    text-align: center;
+}
+
+th {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+td {
+    background: #f8fafc;
+}
+
+.prediction img {
+    max-width: 100%;
+    border-radius: 16px;
+    margin: 0.8rem 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prediction__result {
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prediction__result:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.no-retinopathy { background-color: #2e7d32; }
+.mild-retinopathy { background-color: #fbc02d; }
+.moderate-retinopathy { background-color: #ef6c00; }
+.severe-retinopathy { background-color: #d32f2f; }
+.proliferative-retinopathy { background-color: #7b1fa2; }
+
+.prediction img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Retinopathy Diabetic Detection</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="text" name="patient_id" placeholder="Patient ID" required />
+    <input type="text" name="patient_name" placeholder="Patient Name" required />
+    <input type="number" name="age" placeholder="Age" required />
+    <select name="gender" required>
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+    </select>
+    <input type="tel" name="contact" placeholder="Contact Number" required />
+    <input type="email" name="email" placeholder="Email" />
+    <input type="text" name="address" placeholder="Address" />
+    <input type="file" name="file" accept="image/*" required />
+    <button type="submit">Predict</button>
+</form>
+
+{% if patient %}
+<div class="patient-details">
+    <h2>Patient Details</h2>
+    <table>
+        <tr><th>ID</th><td>{{ patient.patient_id }}</td></tr>
+        <tr><th>Name</th><td>{{ patient.name }}</td></tr>
+        <tr><th>Age</th><td>{{ patient.age }}</td></tr>
+        <tr><th>Gender</th><td>{{ patient.gender }}</td></tr>
+        <tr><th>Contact</th><td>{{ patient.contact }}</td></tr>
+        <tr><th>Email</th><td>{{ patient.email }}</td></tr>
+        <tr><th>Address</th><td>{{ patient.address }}</td></tr>
+    </table>
+</div>
+
+<div class="prediction">
+    <h2>Prediction Report</h2><br>
+
+    {% set pred_class = '' %}
+    {% if prediction == 'No Diabetic Retinopathy' %}{% set pred_class = 'no-retinopathy' %}
+    {% elif prediction == 'Mild Retinopathy' %}{% set pred_class = 'mild-retinopathy' %}
+    {% elif prediction == 'Moderate Retinopathy' %}{% set pred_class = 'moderate-retinopathy' %}
+    {% elif prediction == 'Severe Retinopathy' %}{% set pred_class = 'severe-retinopathy' %}
+    {% elif prediction == 'Proliferative Retinopathy' %}{% set pred_class = 'proliferative-retinopathy' %}
+    {% endif %}
+
+    <div class="prediction__result {{ pred_class }}">
+        Prediction: {{ prediction }} &nbsp;|&nbsp; Confidence: {{ confidence }}%
+    </div>
+
+    <div>
+        <h3>Uploaded Image</h3>
+        <img id="retinaImage" src="{{ img_path }}" alt="Uploaded Image" style="width:300px; height:300px; object-fit:cover;">
+    </div>
+    <div>
+        <h3>Grad-CAM Heatmap</h3>
+        <img id="heatmapImage" src="{{ heatmap_path }}" alt="Grad-CAM Heatmap" style="width:300px; height:300px; object-fit:cover;"> 
+    </div>
+    <br>
+
+    {% if metrics %}
+    <h3>Model Metrics</h3>
+    <p>Overall Accuracy: {{ metrics.accuracy }}%</p><br>
+    <h4>Per-Class Metrics</h4>
+    <table>
+        <tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th></tr>
+        {% for cls, vals in metrics.per_class.items() %}
+        <tr>
+            <td>{{ cls }}</td>
+            <td>{{ vals.precision }}</td>
+            <td>{{ vals.recall }}</td>
+            <td>{{ vals.f1 }}</td>
+        </tr>
+        {% endfor %}
+    </table><br>
+    <h4>Confusion Matrix</h4><br>
+    <pre id="confusionMatrix">{{ metrics.confusion_matrix }}</pre>
+    {% endif %}
+
+    <button id="generateReport" style="padding: 0.8rem 1.5rem; border-radius: 12px; border: none; background-color: #2563eb; color: white; font-weight: 700; cursor: pointer; margin-top: 1rem;">
+        Generate Report
+    </button>
+</div>
+{% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+{% if patient %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateReportBtn = document.getElementById('generateReport');
+    
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener('click', async function() {
+            try {
+                // Show loading state
+                generateReportBtn.disabled = true;
+                generateReportBtn.textContent = 'Generating Report...';
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                const now = new Date();
+                const dateTime = now.toLocaleString();
+                
+                // Set document properties
+                doc.setProperties({
+                    title: 'Diabetic Retinopathy Report',
+                    subject: 'Medical Report',
+                    author: 'Retinopathy Detection System',
+                    keywords: 'medical, retinopathy, diabetes',
+                    creator: 'Retinopathy Detection System'
+                });
+                
+                // Header
+                doc.setFontSize(20);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(30, 58, 138); // Blue color
+                doc.text("DIABETIC RETINOPATHY REPORT", 105, 20, {align: "center"});
+                
+                // Horizontal line
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 25, 190, 25);
+                
+                // Report Information
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont("helvetica", "bold");
+                doc.text("Report Information:", 20, 35);
+                
+                doc.setFont("helvetica", "normal");
+                doc.text(`Generated on: ${dateTime}`, 20, 42);
+                
+                // Patient Details Section
+                doc.setFont("helvetica", "bold");
+                doc.text("Patient Details:", 20, 52);
+                
+                doc.setFont("helvetica", "normal");
+                let yPos = 59;
+                doc.text(`Patient Name: {{ patient.name }}`, 20, yPos);
+                doc.text(`Patient ID: {{ patient.patient_id }}`, 110, yPos);
+                yPos += 7;
+                doc.text(`Age: {{ patient.age }}`, 20, yPos);
+                doc.text(`Gender: {{ patient.gender }}`, 110, yPos);
+                yPos += 7;
+                doc.text(`Contact: {{ patient.contact }}`, 20, yPos);
+                yPos += 7;
+                doc.text(`Email: {{ patient.email }}`, 20, yPos);
+                yPos += 7;
+                doc.text(`Address: {{ patient.address }}`, 20, yPos);
+                yPos += 10;
+                
+                // Diagnosis Section
+                doc.setFont("helvetica", "bold");
+                doc.text("Diagnosis Results:", 20, yPos);
+                yPos += 7;
+                
+                doc.setFont("helvetica", "normal");
+                doc.text(`Prediction: {{ prediction }}`, 20, yPos);
+                doc.text(`Confidence: {{ confidence }}%`, 110, yPos);
+                yPos += 10;
+                
+                // Add images
+                try {
+                    const retinaImg = document.getElementById('retinaImage');
+                    const heatmapImg = document.getElementById('heatmapImage');
+                    
+                    if (retinaImg && retinaImg.src) {
+                        doc.setFont("helvetica", "bold");
+                        doc.text("Retinal Scan:", 20, yPos);
+                        yPos += 7;
+                        
+                        // Add retina image
+                        const retinaData = await getBase64FromUrl(retinaImg.src);
+                        doc.addImage(retinaData, 'PNG', 20, yPos, 80, 60);
+                        
+                        // Add heatmap image next to it
+                        if (heatmapImg && heatmapImg.src) {
+                            doc.setFont("helvetica", "bold");
+                            doc.text("Heatmap Analysis:", 110, yPos - 7);
+                            
+                            const heatmapData = await getBase64FromUrl(heatmapImg.src);
+                            doc.addImage(heatmapData, 'PNG', 110, yPos, 80, 60);
+                        }
+                        
+                        yPos += 65;
+                    }
+                } catch (imgError) {
+                    console.error('Error adding images:', imgError);
+                    doc.setFont("helvetica", "italic");
+                    doc.text("Images could not be loaded", 20, yPos);
+                    yPos += 10;
+                }
+                
+                {% if metrics %}
+                // Model Metrics Section
+                doc.setFont("helvetica", "bold");
+                doc.text("Model Performance Metrics:", 20, yPos);
+                yPos += 7;
+                
+                doc.setFont("helvetica", "normal");
+                doc.text(`Overall Accuracy: {{ metrics.accuracy }}%`, 20, yPos);
+                yPos += 10;
+                
+                // Per-class metrics table
+                const startX = 20;
+                let tableY = yPos;
+                
+                doc.setFont("helvetica", "bold");
+                doc.text("Per-Class Metrics:", startX, tableY);
+                tableY += 7;
+                
+                // Table headers
+                doc.setFontSize(10);
+                doc.text("Class", startX, tableY);
+                doc.text("Precision", startX + 40, tableY);
+                doc.text("Recall", startX + 70, tableY);
+                doc.text("F1-Score", startX + 100, tableY);
+                
+                tableY += 5;
+                doc.setDrawColor(0, 0, 0);
+                doc.line(startX, tableY, startX + 130, tableY);
+                tableY += 5;
+                
+                // Table data
+                doc.setFont("helvetica", "normal");
+                {% for cls, vals in metrics.per_class.items() %}
+                doc.text("{{ cls }}", startX, tableY);
+                doc.text("{{ vals.precision }}", startX + 40, tableY);
+                doc.text("{{ vals.recall }}", startX + 70, tableY);
+                doc.text("{{ vals.f1 }}", startX + 100, tableY);
+                tableY += 6;
+                {% endfor %}
+                
+                // Confusion Matrix
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                tableY += 5;
+                doc.text("Confusion Matrix:", startX, tableY);
+                tableY += 7;
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                const confusionMatrix = document.getElementById('confusionMatrix').textContent;
+                const lines = confusionMatrix.split('\n');
+                for (let line of lines) {
+                    if (line.trim()) {
+                        doc.text(line, startX, tableY);
+                        tableY += 5;
+                    }
+                }
+                {% endif %}
+                
+                // Doctor's Remarks Section
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                // doc.text("Doctor's Remarks:", 20, 260);
+                doc.setFont("helvetica", "normal");
+                doc.line(20, 265, 190, 265);
+                // doc.text("________________________________________________________________", 20, 277);
+                
+                // Footer
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text("This is an AI-generated report. Please consult with a medical professional for final diagnosis.", 105, 290, {align: "center"});
+                
+                // Save the PDF
+                const fileName = `Retinopathy_Report_{{ patient.patient_id }}_{{ patient.name }}.pdf`.replace(/ /g, '_');
+                doc.save(fileName);
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating report. Please try again.');
+            } finally {
+                // Reset button state
+                generateReportBtn.disabled = false;
+                generateReportBtn.textContent = 'Generate Report';
+            }
+        });
+    }
+});
+
+// Helper function to convert image URL to base64
+function getBase64FromUrl(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            
+            // Optionally resize if image is too large
+            const maxSize = 800;
+            if (canvas.width > maxSize || canvas.height > maxSize) {
+                const resizedCanvas = document.createElement('canvas');
+                const scale = maxSize / Math.max(canvas.width, canvas.height);
+                resizedCanvas.width = canvas.width * scale;
+                resizedCanvas.height = canvas.height * scale;
+                
+                const resizedCtx = resizedCanvas.getContext('2d');
+                resizedCtx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+                resolve(resizedCanvas.toDataURL('image/png'));
+            } else {
+                resolve(canvas.toDataURL('image/png'));
+            }
+        };
+        
+        img.onerror = function() {
+            reject(new Error('Failed to load image'));
+        };
+        
+        img.src = url;
+        
+        // If image is already loaded (cached)
+        if (img.complete) {
+            img.onload();
+        }
+    });
+}
+</script>
+{% endif %}
+</body>
+</html>

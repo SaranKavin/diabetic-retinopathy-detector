@@ -1,0 +1,75 @@
+{
+    "accuracy": 99.4,
+    "per_class": {
+        "No DR": {
+            "precision": 99.74,
+            "recall": 100.0,
+            "f1": 99.87,
+            "support": 386
+        },
+        "Mild": {
+            "precision": 100.0,
+            "recall": 92.59,
+            "f1": 96.15,
+            "support": 27
+        },
+        "Moderate": {
+            "precision": 97.06,
+            "recall": 100.0,
+            "f1": 98.51,
+            "support": 66
+        },
+        "Severe": {
+            "precision": 100.0,
+            "recall": 90.91,
+            "f1": 95.24,
+            "support": 11
+        },
+        "Proliferative": {
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1": 100.0,
+            "support": 12
+        }
+    },
+    "confusion_matrix": [
+        [
+            386,
+            0,
+            0,
+            0,
+            0
+        ],
+        [
+            1,
+            25,
+            1,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            66,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            1,
+            10,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            0,
+            12
+        ]
+    ],
+    "macro_f1": 97.95,
+    "micro_f1": 99.4,
+    "weighted_f1": 99.39
+}

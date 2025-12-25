@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 2rem; }
+        .report-container { background: #fff; padding: 2rem; border-radius: 15px; max-width: 700px; margin: auto; }
+        h2 { color: #1e3a8a; }
+        img { max-width: 200px; border-radius: 12px; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #2563eb; color: white; }
+        .confidence { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <h2>Patient Details</h2>
+        <p><strong>Name:</strong> {{ patient_name }}</p>
+        <p><strong>Age:</strong> {{ age }}</p>
+        <p><strong>Gender:</strong> {{ gender }}</p>
+
+        <h2>Prediction Report</h2>
+        <img src="{{ img_path }}" alt="Uploaded Image">
+        <p><strong>AI Prediction:</strong> {{ prediction }}</p>
+        <p class="confidence"><strong>Confidence:</strong> {{ confidence }}%</p>
+        <p><strong>Doctor's Remarks:</strong> ____________________</p>
+
+        <h2>Evaluation Metrics</h2>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Accuracy</td><td>{{ accuracy }}%</td></tr>
+            <tr><td>Precision</td><td>{{ precision }}%</td></tr>
+            <tr><td>Recall</td><td>{{ recall }}%</td></tr>
+            <tr><td>F1-Score</td><td>{{ f1 }}%</td></tr>
+            <tr><td>Confusion Matrix</td><td>{{ confusion_matrix }}</td></tr>
+        </table>
+        
+        <button onclick="window.print()">Export as PDF</button>
+    </div>
+</body>
+</html>
